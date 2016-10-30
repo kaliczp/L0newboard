@@ -7,3 +7,5 @@ Inc/
 L0newboard.ioc
 L0newboard.xml
 /Debug/
+*cfg
+*xml
