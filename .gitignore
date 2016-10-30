@@ -1,0 +1,8 @@
+.cproject
+.mxproject
+.project
+.settings/
+Drivers/
+Inc/
+L0newboard.ioc
+L0newboard.xml
