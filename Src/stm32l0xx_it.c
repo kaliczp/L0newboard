@@ -36,11 +36,10 @@
 #include "stm32l0xx_it.h"
 
 /* USER CODE BEGIN 0 */
-
+extern RTC_HandleTypeDef hrtc;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern RTC_HandleTypeDef hrtc;
 
 /******************************************************************************/
 /*            Cortex-M0+ Processor Interruption and Exception Handlers         */ 
@@ -123,6 +122,7 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32l0xx.s).                    */
 /******************************************************************************/
 
+/* USER CODE BEGIN 1 */
 /**
 * @brief This function handles RTC global interrupt through EXTI lines 17, 19 and 20 and LSE CSS interrupt through EXTI line 19.
 */
@@ -136,8 +136,6 @@ void RTC_IRQHandler(void)
 
   /* USER CODE END RTC_IRQn 1 */
 }
-
-/* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

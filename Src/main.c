@@ -43,7 +43,9 @@ RTC_HandleTypeDef hrtc;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+RTC_AlarmTypeDef newAlarm;
+volatile uint8_t alarmA;
+uint8_t alarmSecValue = 0x10;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -82,6 +84,23 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 
+  /**Enable the Alarm A **/
+  newAlarm.AlarmTime.Hours = 0x0;
+  newAlarm.AlarmTime.Minutes = 0x0;
+  newAlarm.AlarmTime.Seconds = alarmSecValue;
+  newAlarm.AlarmTime.SubSeconds = 0x0;
+  newAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  newAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
+  newAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY|RTC_ALARMMASK_HOURS
+                            |RTC_ALARMMASK_MINUTES;
+  newAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
+  newAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
+  newAlarm.AlarmDateWeekDay = 0x1;
+  newAlarm.Alarm = RTC_ALARM_A;
+  if (HAL_RTC_SetAlarm_IT(&hrtc, &newAlarm, RTC_FORMAT_BCD) != HAL_OK) {
+	  Error_Handler();
+  }
+  alarmA = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -91,6 +110,18 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
+	  if(alarmA == 1){
+		  alarmA = 0;
+		  alarmSecValue += 0x10;
+		  if (alarmSecValue > 0x59){
+			  alarmSecValue = 0x00;
+		  }
+	  HAL_GPIO_TogglePin(GPIOB,	GPIO_PIN_1);
+	  newAlarm.AlarmTime.Seconds = alarmSecValue;
+	  if (HAL_RTC_SetAlarm_IT(&hrtc, &newAlarm, RTC_FORMAT_BCD) != HAL_OK) {
+		  Error_Handler();
+	    }
+	  }
   }
   /* USER CODE END 3 */
 
@@ -161,7 +192,6 @@ static void MX_RTC_Init(void)
 
   RTC_TimeTypeDef sTime;
   RTC_DateTypeDef sDate;
-  RTC_AlarmTypeDef sAlarm;
 
     /**Initialize RTC Only 
     */
@@ -196,25 +226,6 @@ static void MX_RTC_Init(void)
   sDate.Year = 0x0;
 
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-    /**Enable the Alarm A 
-    */
-  sAlarm.AlarmTime.Hours = 0x0;
-  sAlarm.AlarmTime.Minutes = 0x0;
-  sAlarm.AlarmTime.Seconds = 0x0;
-  sAlarm.AlarmTime.SubSeconds = 0x0;
-  sAlarm.AlarmTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  sAlarm.AlarmTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  sAlarm.AlarmMask = RTC_ALARMMASK_DATEWEEKDAY|RTC_ALARMMASK_HOURS
-                              |RTC_ALARMMASK_MINUTES;
-  sAlarm.AlarmSubSecondMask = RTC_ALARMSUBSECONDMASK_ALL;
-  sAlarm.AlarmDateWeekDaySel = RTC_ALARMDATEWEEKDAYSEL_DATE;
-  sAlarm.AlarmDateWeekDay = 0x1;
-  sAlarm.Alarm = RTC_ALARM_A;
-  if (HAL_RTC_SetAlarm_IT(&hrtc, &sAlarm, RTC_FORMAT_BCD) != HAL_OK)
   {
     Error_Handler();
   }
@@ -255,7 +266,7 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *currhrtc){
 
 	/* Clear the Alarm Flag */
 	__HAL_RTC_ALARM_CLEAR_FLAG(currhrtc, RTC_FLAG_ALRAF);
-	HAL_GPIO_TogglePin(GPIOB,	GPIO_PIN_1);
+	alarmA = 1;
 }
 
 /* USER CODE END 4 */
