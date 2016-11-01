@@ -122,6 +122,9 @@ int main(void)
 		  Error_Handler();
 	    }
 	  }
+	  HAL_DBGMCU_EnableDBGSleepMode();
+	  HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
+	  HAL_DBGMCU_DisableDBGSleepMode();
   }
   /* USER CODE END 3 */
 
