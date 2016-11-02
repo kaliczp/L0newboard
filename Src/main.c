@@ -122,6 +122,8 @@ int main(void)
 		  Error_Handler();
 	    }
 	  }
+	  /* Replace Sleep and SLEEP with Stop and STOP for stop mode */
+	  /* It works but debug drop errors */
 	  HAL_DBGMCU_EnableDBGSleepMode();
 	  HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_SLEEPENTRY_WFI);
 	  HAL_DBGMCU_DisableDBGSleepMode();
